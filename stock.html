@@ -12,19 +12,47 @@
 </head>
 <body id="page-stock" class="bg-gray-100 min-h-screen-flex">
 
+    <!-- Menú hamburguesa fijo durante scroll -->
+    <div class="mobile-menu-button fixed top-4 right-4 z-50 bg-brand-fuchsia text-white p-3 rounded-full shadow-lg cursor-pointer">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Overlay del menú -->
+    <div class="menu-overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300"></div>
+
+    <!-- Menú lateral -->
+    <nav class="side-menu fixed top-0 right-0 h-full w-64 bg-white z-50 transform translate-x-full transition-transform duration-300 shadow-xl overflow-y-auto">
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-brand-fuchsia">Menú</h2>
+                <button class="close-menu text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="py-4">
+            <a href="index.html" class="block py-2 px-4 text-gray-800 hover:bg-brand-fuchsia hover:text-white transition duration-200">
+                <i class="fas fa-home mr-2"></i> Inicio
+            </a>
+            <a href="stock.html" class="block py-2 px-4 text-white bg-brand-fuchsia transition duration-200">
+                <i class="fas fa-boxes mr-2"></i> Stock
+            </a>
+            <a href="clientes.html" class="block py-2 px-4 text-gray-800 hover:bg-brand-violet hover:text-white transition duration-200">
+                <i class="fas fa-users mr-2"></i> Clientes
+            </a>
+            <a href="ventas.html" class="block py-2 px-4 text-gray-800 hover:bg-brand-fuchsia hover:text-white transition duration-200">
+                <i class="fas fa-shopping-cart mr-2"></i> Ventas
+            </a>
+        </div>
+    </nav>
+
     <header class="bg-brand-fuchsia text-white shadow-md">
-        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <div class="container mx-auto px-6 py-3 flex items-center">
             <div class="flex items-center">
                 <img src="assets/logo.png" alt="Logo Bella Indumentaria" class="h-20 mr-3" onerror="this.style.display='none'; this.onerror=null;">
                 <h1 class="text-2xl font-bold">Bella Indumentaria Femenina</h1>
             </div>
-            <div class="space-x-4">
-                <a href="index.html" class="text-white hover:text-pink-200">Inicio</a>
-                <a href="stock.html" class="text-white hover:text-pink-200 font-semibold border-b-2 border-white">Stock</a>
-                <a href="clientes.html" class="text-white hover:text-pink-200">Clientes</a>
-                <a href="ventas.html" class="text-white hover:text-pink-200">Ventas</a>
-            </div>
-        </nav>
+        </div>
     </header>
 
     <main class="container mx-auto px-6 py-8">
@@ -69,11 +97,6 @@
                             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prenda</th>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Costo</th>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Venta</th>
-                            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">S</th>
-                            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">M</th>
-                            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">L</th>
-                            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">XL</th>
-                            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">O</th>
                             <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                         </tr>
                     </thead>
@@ -87,6 +110,69 @@
     <footer class="bg-gray-800 text-white text-center p-4 mt-auto">
         <p>&copy; 2025 Bella Indumentaria Femenina. Todos los derechos reservados.</p>
     </footer>
+
+    <!-- Modal para editar stock -->
+    <div id="editStockModal" class="modal">
+        <div class="modal-content max-w-2xl">
+            <span class="modal-close-btn">&times;</span>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Editar Stock</h3>
+            <form id="editStockForm" class="grid grid-cols-1 gap-4">
+                <div class="mb-2">
+                    <h4 id="editItemName" class="text-lg font-medium text-brand-fuchsia"></h4>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="editItemCostPrice" class="block text-sm font-medium text-gray-700 mb-1">Precio de Costo</label>
+                        <input type="number" id="editItemCostPrice" name="editItemCostPrice" required min="0" step="0.01"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-violet focus:border-brand-violet">
+                    </div>
+                    <div>
+                        <label for="editItemPrice" class="block text-sm font-medium text-gray-700 mb-1">Precio de Venta</label>
+                        <input type="number" id="editItemPrice" name="editItemPrice" required min="0" step="0.01"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-violet focus:border-brand-violet">
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 pt-4 mb-2">
+                    <h4 class="text-md font-medium text-gray-700 mb-3">Cantidades por Talle</h4>
+                    <div class="grid grid-cols-5 gap-4">
+                        <div>
+                            <label for="editItemSizeS" class="block text-sm font-medium text-gray-700 mb-1 text-center">S</label>
+                            <input type="number" id="editItemSizeS" name="editItemSizeS" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-violet focus:border-brand-violet text-center">
+                        </div>
+                        <div>
+                            <label for="editItemSizeM" class="block text-sm font-medium text-gray-700 mb-1 text-center">M</label>
+                            <input type="number" id="editItemSizeM" name="editItemSizeM" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-violet focus:border-brand-violet text-center">
+                        </div>
+                        <div>
+                            <label for="editItemSizeL" class="block text-sm font-medium text-gray-700 mb-1 text-center">L</label>
+                            <input type="number" id="editItemSizeL" name="editItemSizeL" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-violet focus:border-brand-violet text-center">
+                        </div>
+                        <div>
+                            <label for="editItemSizeXL" class="block text-sm font-medium text-gray-700 mb-1 text-center">XL</label>
+                            <input type="number" id="editItemSizeXL" name="editItemSizeXL" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-violet focus:border-brand-violet text-center">
+                        </div>
+                        <div>
+                            <label for="editItemSizeO" class="block text-sm font-medium text-gray-700 mb-1 text-center">O</label>
+                            <input type="number" id="editItemSizeO" name="editItemSizeO" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-violet focus:border-brand-violet text-center">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end mt-4">
+                    <button type="button" id="cancelEditBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md mr-2 transition duration-300">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-brand-fuchsia hover:bg-brand-fuchsia-dark text-white font-bold py-2 px-4 rounded-md transition duration-300">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script defer src="app.js"></script>
 </body>

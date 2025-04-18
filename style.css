@@ -67,6 +67,7 @@ main {
 
 #stockTable input[type=number] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 /* Estilos específicos para la página de stock */
@@ -176,6 +177,38 @@ main {
 .text-brand-violet { color: #8A2BE2; }
 .border-brand-violet { border-color: #8A2BE2; }
 .hover\:bg-brand-violet-dark:hover { background-color: #6a1fad; } /* Violeta más oscuro para hover */
+
+/* --- Estilos para el Menú Hamburguesa --- */
+.mobile-menu-button {
+    transition: transform 0.3s ease;
+    z-index: 60;
+}
+
+.mobile-menu-button:hover {
+    transform: scale(1.1);
+}
+
+.menu-overlay {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.menu-overlay.opacity-100 {
+    opacity: 1;
+}
+
+.side-menu {
+    transition: transform 0.3s ease;
+}
+
+/* Asegurar que el menú esté por encima de otros elementos */
+.z-50 {
+    z-index: 50;
+}
+
+.z-60 {
+    z-index: 60;
+}
 
 /* Fuente Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');

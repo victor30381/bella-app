@@ -1,5 +1,53 @@
 // app.js - Lógica para Bella Indumentaria Femenina
 
+// --- Funcionalidad del Menú Hamburguesa ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del menú
+    const menuButton = document.querySelector('.mobile-menu-button');
+    const closeButton = document.querySelector('.close-menu');
+    const sideMenu = document.querySelector('.side-menu');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    
+    // Función para abrir el menú
+    function openMenu() {
+        sideMenu.classList.remove('translate-x-full');
+        menuOverlay.classList.remove('hidden');
+        // Añadir un pequeño retraso para que la transición de opacidad funcione correctamente
+        setTimeout(() => {
+            menuOverlay.classList.add('opacity-100');
+        }, 10);
+    }
+    
+    // Función para cerrar el menú
+    function closeMenu() {
+        sideMenu.classList.add('translate-x-full');
+        menuOverlay.classList.remove('opacity-100');
+        // Añadir un pequeño retraso para que la transición de opacidad funcione correctamente
+        setTimeout(() => {
+            menuOverlay.classList.add('hidden');
+        }, 300);
+    }
+    
+    // Event listeners
+    if (menuButton) {
+        menuButton.addEventListener('click', openMenu);
+    }
+    
+    if (closeButton) {
+        closeButton.addEventListener('click', closeMenu);
+    }
+    
+    if (menuOverlay) {
+        menuOverlay.addEventListener('click', closeMenu);
+    }
+    
+    // Cerrar el menú cuando se hace clic en un enlace
+    const menuLinks = document.querySelectorAll('.side-menu a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+});
+
 // --- Constantes Globales ---
 const SIZES = ['S', 'M', 'L', 'XL', 'O'];
 const STOCK_STORAGE_KEY = 'bella_stock';
@@ -202,7 +250,7 @@ function initStockPage() {
         if (stockData.length === 0) {
             stockTableBody.innerHTML = `
                 <tr>
-                    <td colspan="${3 + SIZES.length + 1}" class="text-center py-4 text-gray-500" role="alert">
+                    <td colspan="4" class="text-center py-4 text-gray-500" role="alert">
                         No hay prendas en el stock. Agrega una nueva.
                     </td>
                 </tr>
@@ -238,29 +286,21 @@ function initStockPage() {
             priceCell.setAttribute('role', 'cell');
             row.appendChild(priceCell);
 
-            // Celdas Talles
-            SIZES.forEach(size => {
-                const sizeCell = document.createElement('td');
-                sizeCell.className = 'px-2 py-3 text-center';
-                sizeCell.setAttribute('role', 'cell');
-                
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.min = '0';
-                input.value = item.sizes[size] || 0;
-                input.dataset.itemName = item.name;
-                input.dataset.size = size;
-                input.setAttribute('aria-label', `Cantidad de ${item.name} en talle ${size}`);
-                input.classList.add('stock-quantity-input', 'border', 'border-gray-300', 'rounded-md', 'focus:ring-brand-violet', 'focus:border-brand-violet', 'w-20', 'text-center');
-                sizeCell.appendChild(input);
-                row.appendChild(sizeCell);
-            });
-
             // Celda Acciones
             const actionsCell = document.createElement('td');
-            actionsCell.className = 'px-4 py-3 text-center whitespace-nowrap text-sm font-medium';
+            actionsCell.className = 'px-4 py-3 text-center whitespace-nowrap text-sm font-medium flex justify-center space-x-3';
             actionsCell.setAttribute('role', 'cell');
             
+            // Botón de editar (lápiz fucsia)
+            const editButton = document.createElement('button');
+            editButton.className = 'text-brand-fuchsia hover:text-brand-fuchsia-dark editItemBtn';
+            editButton.dataset.itemName = item.name;
+            editButton.innerHTML = '<i class="fas fa-pencil-alt" aria-hidden="true"></i>';
+            editButton.setAttribute('aria-label', `Editar ${item.name}`);
+            editButton.title = 'Editar prenda';
+            actionsCell.appendChild(editButton);
+            
+            // Botón de eliminar (basura roja)
             const deleteButton = document.createElement('button');
             deleteButton.className = 'text-red-600 hover:text-red-800 deleteItemBtn';
             deleteButton.dataset.itemName = item.name;
@@ -268,6 +308,7 @@ function initStockPage() {
             deleteButton.setAttribute('aria-label', `Eliminar ${item.name}`);
             deleteButton.title = 'Eliminar prenda';
             actionsCell.appendChild(deleteButton);
+            
             row.appendChild(actionsCell);
 
             stockTableBody.appendChild(row);
@@ -328,6 +369,93 @@ function initStockPage() {
         itemNameInput.focus();
     }
 
+    /** Abre el modal de edición de stock y carga los datos del item seleccionado. */
+    function setupEditStockModal(itemName) {
+        const stockData = getStockData();
+        const item = stockData.find(item => item.name === itemName);
+        
+        if (!item) {
+            showMessage(`No se encontró la prenda "${itemName}".`, "error");
+            return;
+        }
+        
+        // Llenar el formulario con los datos del item
+        document.getElementById('editItemName').textContent = item.name;
+        document.getElementById('editItemCostPrice').value = item.costPrice || 0;
+        document.getElementById('editItemPrice').value = item.price || 0;
+        
+        // Llenar los campos de tallas
+        document.getElementById('editItemSizeS').value = item.sizes['S'] || 0;
+        document.getElementById('editItemSizeM').value = item.sizes['M'] || 0;
+        document.getElementById('editItemSizeL').value = item.sizes['L'] || 0;
+        document.getElementById('editItemSizeXL').value = item.sizes['XL'] || 0;
+        document.getElementById('editItemSizeO').value = item.sizes['O'] || 0;
+        
+        // Guardar el nombre del item en el formulario para referencia
+        document.getElementById('editStockForm').dataset.itemName = item.name;
+        
+        // Abrir el modal
+        openModal('editStockModal');
+    }
+    
+    /** Maneja el envío del formulario de edición de stock. */
+    function handleEditStockSubmit(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const itemName = form.dataset.itemName;
+        
+        // Obtener valores del formulario
+        const costPrice = parseFloat(document.getElementById('editItemCostPrice').value);
+        const price = parseFloat(document.getElementById('editItemPrice').value);
+        
+        // Obtener valores de tallas
+        const sizeS = parseInt(document.getElementById('editItemSizeS').value) || 0;
+        const sizeM = parseInt(document.getElementById('editItemSizeM').value) || 0;
+        const sizeL = parseInt(document.getElementById('editItemSizeL').value) || 0;
+        const sizeXL = parseInt(document.getElementById('editItemSizeXL').value) || 0;
+        const sizeO = parseInt(document.getElementById('editItemSizeO').value) || 0;
+        
+        // Validaciones
+        if (isNaN(costPrice) || costPrice < 0) {
+            showMessage("Ingresa un precio de costo válido (mayor o igual a 0).", "error");
+            return;
+        }
+        if (isNaN(price) || price < 0) {
+            showMessage("Ingresa un precio de venta válido (mayor o igual a 0).", "error");
+            return;
+        }
+        
+        // Actualizar datos en el almacenamiento
+        const stockData = getStockData();
+        const itemIndex = stockData.findIndex(item => item.name === itemName);
+        
+        if (itemIndex === -1) {
+            showMessage(`No se encontró la prenda "${itemName}".`, "error");
+            return;
+        }
+        
+        // Actualizar el objeto del item
+        stockData[itemIndex].costPrice = costPrice;
+        stockData[itemIndex].price = price;
+        stockData[itemIndex].sizes = {
+            'S': sizeS,
+            'M': sizeM,
+            'L': sizeL,
+            'XL': sizeXL,
+            'O': sizeO
+        };
+        
+        // Guardar los cambios
+        saveStockData(stockData);
+        
+        // Cerrar el modal y actualizar la tabla
+        closeModal('editStockModal');
+        renderStockTable();
+        
+        showMessage(`Prenda "${itemName}" actualizada correctamente.`, "success");
+    }
+
     /** Maneja el cambio en un input de cantidad de stock. */
     function handleQuantityChange(event) {
         const input = event.target;
@@ -359,13 +487,11 @@ function initStockPage() {
     }
 
     /** Maneja el clic en un botón de eliminar prenda. */
-    function handleDeleteItem(event) {
-        const deleteButton = event.target.closest('.deleteItemBtn');
-        if (!deleteButton || !deleteButton.closest('#stockTableBody')) {
-            return; // Salir si no se hizo clic en un botón de eliminar dentro de la tabla
+    function handleDeleteItem(itemName) {
+        if (!itemName) {
+            console.error('No se proporcionó un nombre de prenda para eliminar');
+            return;
         }
-
-        const itemName = deleteButton.dataset.itemName;
 
         if (confirm(`¿Estás seguro de que quieres eliminar la prenda "${itemName}"? Esta acción no se puede deshacer.`)) {
             let stockData = getStockData();
@@ -378,9 +504,49 @@ function initStockPage() {
 
     // --- Inicialización y Asignación de Eventos para Stock ---
     addItemForm.addEventListener('submit', handleAddItem);
-    // Usar delegación de eventos en el body de la tabla para inputs y botones
-    stockTableBody.addEventListener('change', handleQuantityChange); // 'change' se dispara al perder foco/Enter
-    stockTableBody.addEventListener('click', handleDeleteItem);
+    
+    // Configurar el formulario de edición
+    const editStockForm = document.getElementById('editStockForm');
+    if (editStockForm) {
+        editStockForm.addEventListener('submit', handleEditStockSubmit);
+    }
+
+    // Configurar botón de cancelar edición
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener('click', function() {
+            closeModal('editStockModal');
+        });
+    }
+
+    // Configurar cierre del modal con el botón X
+    const closeModalBtn = document.querySelector('#editStockModal .modal-close-btn');
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+            closeModal('editStockModal');
+        });
+    }
+
+    // Event delegation para botones de eliminar, editar y cambios en inputs
+    document.addEventListener('click', function(event) {
+        // Botón eliminar
+        if (event.target.closest('.deleteItemBtn')) {
+            const button = event.target.closest('.deleteItemBtn');
+            const itemName = button.dataset.itemName;
+            handleDeleteItem(itemName);
+        }
+        
+        // Botón editar
+        if (event.target.closest('.editItemBtn')) {
+            const button = event.target.closest('.editItemBtn');
+            const itemName = button.dataset.itemName;
+            setupEditStockModal(itemName);
+        }
+    });
+
+    document.addEventListener('change', function(event) {
+        handleQuantityChange(event);
+    });
 
     // Renderizar tabla inicial
     renderStockTable();

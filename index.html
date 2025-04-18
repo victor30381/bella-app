@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de gestión para Bella Indumentaria Femenina">
+    <title>Bella Indumentaria Femenina</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.ico.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="page-index" class="bg-gray-100 min-h-screen-flex">
+
+    <header class="bg-brand-fuchsia text-white shadow-md">
+        <div class="container mx-auto px-6 py-3 text-center">
+            <h1 class="text-3xl font-bold">Bella Indumentaria Femenina</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 flex flex-col items-center justify-center flex-grow">
+        <div class="text-center mb-12">
+            <img src="assets/logo.png" alt="Logo Bella Indumentaria" class="h-[288px] mx-auto mb-8" onerror="this.style.display='none'; this.onerror=null;">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <a href="stock.html" class="bg-brand-fuchsia hover:bg-brand-fuchsia-dark text-white font-bold py-6 px-8 rounded-lg text-xl transition duration-300 flex flex-col items-center">
+                    <i class="fas fa-boxes text-4xl mb-3" aria-hidden="true"></i>
+                    Stock
+                </a>
+                
+                <a href="clientes.html" class="bg-brand-violet hover:bg-brand-violet-dark text-white font-bold py-6 px-8 rounded-lg text-xl transition duration-300 flex flex-col items-center">
+                    <i class="fas fa-users text-4xl mb-3" aria-hidden="true"></i>
+                    Clientes
+                </a>
+                
+                <a href="ventas.html" class="bg-brand-fuchsia hover:bg-brand-fuchsia-dark text-white font-bold py-6 px-8 rounded-lg text-xl transition duration-300 flex flex-col items-center">
+                    <i class="fas fa-shopping-cart text-4xl mb-3" aria-hidden="true"></i>
+                    Ventas
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center p-4 mt-auto">
+        <p>&copy; 2025 Bella Indumentaria Femenina. Todos los derechos reservados.</p>
+    </footer>
+
+    <script defer src="app.js"></script>
+</body>
+</html>

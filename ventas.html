@@ -12,19 +12,47 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="page-ventas" class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Menú hamburguesa fijo durante scroll -->
+    <div class="mobile-menu-button fixed top-4 right-4 z-50 bg-brand-fuchsia text-white p-3 rounded-full shadow-lg cursor-pointer">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Overlay del menú -->
+    <div class="menu-overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300"></div>
+
+    <!-- Menú lateral -->
+    <nav class="side-menu fixed top-0 right-0 h-full w-64 bg-white z-50 transform translate-x-full transition-transform duration-300 shadow-xl overflow-y-auto">
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-brand-fuchsia">Menú</h2>
+                <button class="close-menu text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="py-4">
+            <a href="index.html" class="block py-2 px-4 text-gray-800 hover:bg-brand-fuchsia hover:text-white transition duration-200">
+                <i class="fas fa-home mr-2"></i> Inicio
+            </a>
+            <a href="stock.html" class="block py-2 px-4 text-gray-800 hover:bg-brand-fuchsia hover:text-white transition duration-200">
+                <i class="fas fa-boxes mr-2"></i> Stock
+            </a>
+            <a href="clientes.html" class="block py-2 px-4 text-gray-800 hover:bg-brand-violet hover:text-white transition duration-200">
+                <i class="fas fa-users mr-2"></i> Clientes
+            </a>
+            <a href="ventas.html" class="block py-2 px-4 text-white bg-brand-fuchsia transition duration-200">
+                <i class="fas fa-shopping-cart mr-2"></i> Ventas
+            </a>
+        </div>
+    </nav>
+
     <header class="bg-brand-fuchsia text-white shadow-md">
-        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <div class="container mx-auto px-6 py-3 flex items-center">
             <div class="flex items-center">
                 <img src="assets/logo.png" alt="Logo Bella Indumentaria" class="h-20 mr-3" onerror="this.style.display='none'; this.onerror=null;">
                 <h1 class="text-2xl font-bold">Bella Indumentaria Femenina</h1>
             </div>
-            <div class="space-x-4">
-                <a href="index.html" class="text-white hover:text-pink-200">Inicio</a>
-                <a href="stock.html" class="text-white hover:text-pink-200">Stock</a>
-                <a href="clientes.html" class="text-white hover:text-pink-200">Clientes</a>
-                <a href="ventas.html" class="text-white hover:text-pink-200 font-semibold border-b-2 border-white">Ventas</a>
-            </div>
-        </nav>
+        </div>
     </header>
 
     <main class="container mx-auto px-6 py-8 flex-grow">

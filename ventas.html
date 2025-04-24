@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <script src="check-auth.js"></script>
 </head>
 <body id="page-ventas" class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Menú hamburguesa fijo durante scroll -->
@@ -158,6 +160,23 @@
         <p>&copy; 2025 Bella Indumentaria Femenina. Todos los derechos reservados.</p>
     </footer>
 
+    <!-- Firebase SDK -->
+    <script type="module" src="firebase-config.js"></script>
+    
+    <!-- Firebase Database -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js"></script>
+    
+    <!-- Firebase Auth -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    
+    <!-- Firebase Sync -->
+    <script type="module" src="firebase-sync.js"></script>
+    
+    <!-- Firebase Auth UI -->
+    <script type="module" src="firebase-auth.js"></script>
+    <script type="module" src="auth-ui.js"></script>
+    
+    <!-- App Script -->
     <script defer src="app.js"></script>
 </body>
 </html>

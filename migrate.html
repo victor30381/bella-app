@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Migración de datos para Bella Indumentaria Femenina">
+    <title>Bella Indumentaria Femenina - Migración a Firebase</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.ico.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <script src="check-auth.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-brand-fuchsia text-white shadow-md">
+        <div class="container mx-auto px-6 py-3 text-center">
+            <h1 class="text-3xl font-bold">Bella Indumentaria Femenina</h1>
+            <p class="text-xl">Migración de Datos a Firebase</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 flex-grow flex flex-col items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full">
+            <h2 class="text-2xl font-bold text-brand-fuchsia mb-6 text-center">Migración de Datos</h2>
+            
+            <div class="mb-6">
+                <p class="text-gray-700 mb-4">
+                    Este proceso migrará todos tus datos actuales (stock, clientes y ventas) desde el almacenamiento local de tu navegador a Firebase, permitiéndote acceder a ellos desde cualquier dispositivo.
+                </p>
+                <p class="text-gray-700 mb-4">
+                    <strong>Importante:</strong> Este proceso no eliminará tus datos locales, pero a partir de ahora la aplicación utilizará Firebase como fuente principal de datos.
+                </p>
+            </div>
+            
+            <div id="messageArea" class="mb-6" role="alert"></div>
+            
+            <div class="flex justify-center">
+                <button id="migrateButton" class="bg-brand-fuchsia hover:bg-brand-fuchsia-dark text-white font-bold py-3 px-6 rounded-md transition duration-300 flex items-center">
+                    <i class="fas fa-database mr-2"></i>
+                    Iniciar Migración a Firebase
+                </button>
+            </div>
+            
+            <div id="progressArea" class="mt-6 hidden">
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div id="progressBar" class="bg-brand-fuchsia h-4 rounded-full" style="width: 0%"></div>
+                </div>
+                <p id="progressText" class="text-sm text-gray-600 mt-2 text-center">Preparando migración...</p>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <a href="index.html" class="text-brand-fuchsia hover:text-brand-fuchsia-dark font-medium">
+                    <i class="fas fa-arrow-left mr-1"></i> Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center p-4">
+        <p>&copy; 2025 Bella Indumentaria Femenina. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="firebase-config.js"></script>
+    
+    <!-- Firebase Database -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js"></script>
+    
+    <!-- Firebase Auth -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    
+    <!-- Firebase Auth UI -->
+    <script type="module" src="firebase-auth.js"></script>
+    <script type="module" src="auth-ui.js"></script>
+    
+    <!-- Script de Migración -->
+    <script type="module">
+        import { migrateLocalStorageToFirebase } from './firebase-db.js';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const migrateButton = document.getElementById('migrateButton');
+            const messageArea = document.getElementById('messageArea');
+            const progressArea = document.getElementById('progressArea');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            function showMessage(text, type = 'success') {
+                messageArea.innerHTML = `
+                    <div class="p-4 rounded-md ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                        ${text}
+                    </div>
+                `;
+            }
+            
+            function updateProgress(percent, text) {
+                progressBar.style.width = `${percent}%`;
+                progressText.textContent = text;
+            }
+            
+            migrateButton.addEventListener('click', async function() {
+                try {
+                    // Deshabilitar botón y mostrar progreso
+                    migrateButton.disabled = true;
+                    migrateButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    progressArea.classList.remove('hidden');
+                    
+                    // Actualizar progreso
+                    updateProgress(10, 'Iniciando migración...');
+                    
+                    // Pequeña pausa para mostrar la animación
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    updateProgress(30, 'Conectando con Firebase...');
+                    
+                    // Pequeña pausa para mostrar la animación
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    updateProgress(50, 'Preparando datos...');
+                    
+                    // Realizar la migración
+                    await migrateLocalStorageToFirebase();
+                    
+                    // Actualizar progreso
+                    updateProgress(100, 'Migración completada');
+                    
+                    // Mostrar mensaje de éxito
+                    showMessage('¡La migración a Firebase se ha completado con éxito! Ahora puedes acceder a tus datos desde cualquier dispositivo.', 'success');
+                    
+                    // Cambiar texto del botón
+                    migrateButton.innerHTML = '<i class="fas fa-check mr-2"></i> Migración Completada';
+                    
+                } catch (error) {
+                    console.error('Error durante la migración:', error);
+                    showMessage(`Error durante la migración: ${error.message}`, 'error');
+                    
+                    // Habilitar botón para reintentar
+                    migrateButton.disabled = false;
+                    migrateButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    updateProgress(0, 'Error en la migración');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

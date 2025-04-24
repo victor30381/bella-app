@@ -288,7 +288,7 @@ function initStockPage() {
 
             // Celda Acciones
             const actionsCell = document.createElement('td');
-            actionsCell.className = 'px-4 py-3 text-center whitespace-nowrap text-sm font-medium flex justify-center space-x-3';
+            actionsCell.className = 'px-4 py-3 text-center whitespace-nowrap text-sm font-medium flex justify-center space-x-6';
             actionsCell.setAttribute('role', 'cell');
             
             // Botón de editar (lápiz fucsia)
@@ -1256,16 +1256,33 @@ function generateClientPdf(client) {
             throw new Error('La biblioteca jsPDF no está cargada correctamente');
         }
 
+        // Crear el documento PDF
         const doc = new window.jsPDF();
-
-        // Configuración inicial
-        doc.setFontSize(16);
-        doc.text('Bella Indumentaria Femenina', 20, 20);
+        
+        // Configuración inicial con estilo femenino y delicado
+        doc.setTextColor(236, 72, 153); // Color fucsia para los títulos
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        
+        // Centrar el título principal
+        const pageWidth = doc.internal.pageSize.getWidth();
+        doc.text('Bella Indumentaria Femenina', pageWidth / 2, 25, { align: 'center' });
+        
+        doc.setTextColor(147, 51, 234); // Color violeta para subtítulos
+        doc.setFontSize(18);
+        doc.text('Historial de Movimientos', pageWidth / 2, 35, { align: 'center' });
+        
+        // Añadir decoración
+        doc.setDrawColor(236, 72, 153); // Color fucsia
+        doc.setLineWidth(0.5);
+        doc.line(20, 40, pageWidth - 20, 40); // Línea decorativa debajo del título
+        
+        doc.setTextColor(0, 0, 0); // Color negro para el contenido
+        doc.setFont('helvetica', 'normal');
         doc.setFontSize(12);
-        doc.text('Historial de Movimientos', 20, 30);
-        doc.text(`Cliente: ${client.name || 'Sin nombre'}`, 20, 40);
-        doc.text(`Deuda Actual: ${formatCurrency(client.debt || 0)}`, 20, 50);
-
+        doc.text(`Cliente: ${client.name || 'Sin nombre'}`, 20, 50);
+        doc.text(`Deuda Actual: ${formatCurrency(client.debt || 0)}`, 20, 58);
+    
         // Configurar la tabla
         const headers = ['Fecha', 'Tipo', 'Prenda', 'Talle', 'Cantidad', 'Precio', 'Pago', 'Monto'];
         const rows = (client.movements || []).sort((a, b) => {
@@ -1290,9 +1307,9 @@ function generateClientPdf(client) {
             ];
         });
 
-        // Configurar el estilo de la tabla
+        // Configurar el estilo de la tabla con un diseño más delicado
         doc.autoTable({
-            startY: 60,
+            startY: 65,
             head: [headers],
             body: rows.length > 0 ? rows : [['No hay movimientos registrados']],
             theme: 'grid',
@@ -1300,11 +1317,17 @@ function generateClientPdf(client) {
                 fillColor: [236, 72, 153], // Color fucsia
                 textColor: 255,
                 fontSize: 10,
-                fontStyle: 'bold'
+                fontStyle: 'bold',
+                halign: 'center'
             },
             styles: {
                 fontSize: 9,
-                cellPadding: 2
+                cellPadding: 3,
+                lineColor: [236, 72, 153], // Bordes en color fucsia
+                lineWidth: 0.1
+            },
+            alternateRowStyles: {
+                fillColor: [252, 231, 243] // Color rosa claro para filas alternas
             },
             columnStyles: {
                 0: { cellWidth: 25 }, // Fecha
@@ -1315,12 +1338,19 @@ function generateClientPdf(client) {
                 5: { cellWidth: 25 }, // Precio
                 6: { cellWidth: 20 }, // Pago
                 7: { cellWidth: 25 }  // Monto
+            },
+            didDrawPage: function(data) {
+                // Añadir pie de página
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('Bella Indumentaria Femenina - Documento generado el ' + new Date().toLocaleDateString('es-AR'), 20, doc.internal.pageSize.height - 10);
             }
         });
 
         // Guardar el PDF
         const fileName = `historial_${(client.name || 'cliente').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
         doc.save(fileName);
+        
     } catch (error) {
         console.error('Error al generar el PDF:', error);
         showMessage('Error al generar el PDF. Por favor, intente nuevamente.', 'error');
